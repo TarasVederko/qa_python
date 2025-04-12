@@ -9,6 +9,7 @@ def collector():
     return collector
 
 @pytest.fixture()
-def collector_with_one_book(collector):
-    collector.add_new_book(BOOK_TITLE)
+def collector_one_book(collector):
+    collector.add_new_book(BOOK_TITLE_1)
     return collector
+

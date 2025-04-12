@@ -30,24 +30,55 @@ class TestBooksCollector:
     # проверям, что две книги с одинаковым названием добавить не получится
     def test_add_new_book_add_same_book(self, collector):
         #collector = BooksCollector()
-        collector.add_new_book(BOOK_TITLE)
-        collector.add_new_book(BOOK_TITLE)
-        assert len(collector.books_genre) == 1
+        collector.add_new_book(BOOK_TITLE_1)
+        collector.add_new_book(BOOK_TITLE_1)
+        result = len(collector.books_genre)
+        assert result == 1
 
     # проверяем, что книгу нелья добавть книги без названия ипи больше 40 символов
     @pytest.mark.parametrize('book_title_wrong', WRONG_BOOK_TITLE)
     def test_add_new_book_wrong_name(self, collector, book_title_wrong):
         collector.add_new_book(book_title_wrong)
-        assert len(collector.books_genre) == 0
+        result = len(collector.books_genre)
+        assert result == 0
 
     #проверям, что можно добавть жанр книги
     @pytest.mark.parametrize('book_genre', GENRE)
-    def test_set_book_genre_from_genre(self, collector_with_one_book, book_genre):
-        collector_with_one_book.set_book_genre(BOOK_TITLE, book_genre)
-        assert collector_with_one_book.get_book_genre(BOOK_TITLE) == book_genre
+    def test_set_book_genre_from_genre(self, collector_one_book, book_genre):
+        collector_one_book.set_book_genre(BOOK_TITLE_1, book_genre)
+        result = collector_one_book.get_book_genre(BOOK_TITLE_1)
+        assert result == book_genre
 
     #check set genre not from GENRE
     @pytest.mark.parametrize('book_genre_wrong', WRONG_GENRE)
-    def test_set_book_genre_not_from_genre(self, collector_with_one_book, book_genre_wrong):
-        collector_with_one_book.set_book_genre(BOOK_TITLE, book_genre_wrong)
-        assert collector_with_one_book.get_book_genre(BOOK_TITLE) == ''
+    def test_set_book_genre_not_from_genre(self, collector_one_book, book_genre_wrong):
+        collector_one_book.set_book_genre(BOOK_TITLE_1, book_genre_wrong)
+        result = collector_one_book.get_book_genre(BOOK_TITLE_1)
+        assert result == ''
+
+    #check re genre by name
+    @pytest.mark.parametrize('book_genre', GENRE)
+    def test_get_book_genre_from_book_genre(self, collector_one_book, book_genre):
+        collector_one_book.set_book_genre(BOOK_TITLE_1, book_genre)
+        result = collector_one_book.get_book_genre(BOOK_TITLE_1)
+        assert result == book_genre
+
+    #вывод списка книг по жанру
+    def test_get_books_with_specific_genre(self, collector_one_book):
+        collector_one_book.set_book_genre(BOOK_TITLE_1, BOOK_GENRE_1)
+        collector_one_book.add_new_book(BOOK_TITLE_2)
+        collector_one_book.set_book_genre(BOOK_TITLE_2, BOOK_GENRE_2)
+        result = collector_one_book.get_books_with_specific_genre(BOOK_GENRE_2)
+        assert result[0] == BOOK_TITLE_2
+
+
+    #вывод словаря books_genre
+    def test_get_books_genre(self, collector_one_book):
+        collector_one_book.set_book_genre(BOOK_TITLE_1, BOOK_GENRE_1)
+        collector_one_book.add_new_book(BOOK_TITLE_2)
+        result = collector_one_book.get_books_genre()
+        expected = {BOOK_TITLE_1: BOOK_GENRE_1, BOOK_TITLE_2: ''}
+        assert result == expected
+
+
+
