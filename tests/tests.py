@@ -85,7 +85,7 @@ class TestBooksCollector:
         assert result == expected
 
     #проверяес возможность добавления книги в избранное
-    def test_add_book_in_favorite(self, collector_two_books_one_genre):
+    def test_add_book_in_favorite_one_book(self, collector_two_books_one_genre):
         collector_two_books_one_genre.add_book_in_favorites(BOOK_TITLE_1)
         result = collector_two_books_one_genre.favorites
         expected = [BOOK_TITLE_1]
