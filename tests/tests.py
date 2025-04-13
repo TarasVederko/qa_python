@@ -1,6 +1,6 @@
-import pytest
-from main import BooksCollector
-from data import *
+#import pytest
+#from main import BooksCollector
+#from data import *
 from conftest import *
 
 
@@ -28,7 +28,7 @@ class TestBooksCollector:
     # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
 
     # проверям, что две книги с одинаковым названием добавить не получится
-    def test_add_new_book_add_same_book(self, collector):
+    def test_add_new_book_add_same_name_book(self, collector):
         #collector = BooksCollector()
         collector.add_new_book(BOOK_TITLE_1)
         collector.add_new_book(BOOK_TITLE_1)
@@ -42,7 +42,7 @@ class TestBooksCollector:
         result = len(collector.books_genre)
         assert result == 0
 
-    #проверям, что можно добавть жанр книги
+    #проверям, что можно добавить жанр книги
     @pytest.mark.parametrize('book_genre', GENRE)
     def test_set_book_genre_from_genre(self, collector_one_book, book_genre):
         collector_one_book.set_book_genre(BOOK_TITLE_1, book_genre)
@@ -64,21 +64,42 @@ class TestBooksCollector:
         assert result == book_genre
 
     #вывод списка книг по жанру
-    def test_get_books_with_specific_genre(self, collector_one_book):
-        collector_one_book.set_book_genre(BOOK_TITLE_1, BOOK_GENRE_1)
-        collector_one_book.add_new_book(BOOK_TITLE_2)
-        collector_one_book.set_book_genre(BOOK_TITLE_2, BOOK_GENRE_2)
-        result = collector_one_book.get_books_with_specific_genre(BOOK_GENRE_2)
+    def test_get_books_with_specific_genre(self, collector_two_books_one_genre):
+        collector_two_books_one_genre.set_book_genre(BOOK_TITLE_2, BOOK_GENRE_2)
+        result = collector_two_books_one_genre.get_books_with_specific_genre(BOOK_GENRE_2)
         assert result[0] == BOOK_TITLE_2
 
 
     #вывод словаря books_genre
-    def test_get_books_genre(self, collector_one_book):
-        collector_one_book.set_book_genre(BOOK_TITLE_1, BOOK_GENRE_1)
-        collector_one_book.add_new_book(BOOK_TITLE_2)
-        result = collector_one_book.get_books_genre()
-        expected = {BOOK_TITLE_1: BOOK_GENRE_1, BOOK_TITLE_2: ''}
+    def test_get_books_genre(self, collector_two_books_one_genre):
+        result = collector_two_books_one_genre.get_books_genre()
+        expected = {BOOK_TITLE_1:BOOK_GENRE_1, BOOK_TITLE_2:''}
         assert result == expected
 
+    #возвращаем книги, подходящие детям
+    @pytest.mark.parametrize('genre_age_rating', GENRE_AGE_RATING)
+    def test_get_books_for_children(self, collector_two_books_one_genre, genre_age_rating):
+        collector_two_books_one_genre.set_book_genre(BOOK_TITLE_2, genre_age_rating)
+        result = collector_two_books_one_genre.get_books_for_children()
+        expected = [BOOK_TITLE_1]
+        assert result == expected
 
+    #проверяес возможность добавления книги в избранное
+    def test_add_book_in_favorite(self, collector_two_books_one_genre):
+        collector_two_books_one_genre.add_book_in_favorites(BOOK_TITLE_1)
+        result = collector_two_books_one_genre.favorites
+        expected = [BOOK_TITLE_1]
+        assert result == expected
 
+    #проверяем возможеость удаления книги из избранного
+    def test_delete_book_from_favorites(self, two_books_added_to_favorite):
+        two_books_added_to_favorite.delete_book_from_favorites(BOOK_TITLE_1)
+        result = two_books_added_to_favorite.favorites
+        expected = [BOOK_TITLE_2]
+        assert result == expected
+
+    #проверяем возможность получения списка избранных
+    def test_get_list_of_favorites_books(self, two_books_added_to_favorite):
+        result = two_books_added_to_favorite.get_list_of_favorites_books()
+        expected = [BOOK_TITLE_1, BOOK_TITLE_2]
+        assert result == expected
